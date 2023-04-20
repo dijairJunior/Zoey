@@ -43,6 +43,8 @@ def ia():
         tts.save('fala_robo.mp3')
         tts.save('fala_robo.mp3')
         playsound(robo)
+        os.remove(filename)
+        os.remove(robo)
 
     # Criando Função para gravar o audio
     def grava():
@@ -90,12 +92,11 @@ def ia():
             fec = f.read()
             if texto in fec:
                 fala('Ok desligando....')
-                playsound('deslingando.wave')
                 janela.destroy()
                 break
 
             # Para dizer o horário
-            elif 'horas' in texto:
+            elif 'horas' in texto or 'hora' in texto:
                 hora = datetime.datetime.now().strftime('%H:%M')
                 fala('Agora são' + hora)
 
