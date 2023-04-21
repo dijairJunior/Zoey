@@ -19,9 +19,6 @@ def ia():
     import joblib
     import soundfile as sf
     import wavio as wv
-    from pydub import AudioSegment
-    from pydub.playback import play
-
 
     global snome, slink, meu_site
 
@@ -45,12 +42,11 @@ def ia():
     # Função de fala
     def fala(text):
         tts = gTTS(text, lang='pt')
-        tts.save('robo_mp3')
-        tts.save('robo_fala.mp3')
+        tts.save('minha_voz.wav')
+        tts.save('fala_robo.mp3')
         playsound(robo)
-        playsound(filename)
-        os.remove(robo)
         os.remove(filename)
+        os.remove(robo)
         
     # Criando Função para gravar o audio
     def grava():
@@ -114,7 +110,7 @@ def ia():
             # Para tocar a musica ou video no youtube
             elif 'toque' in texto or 'tocar' in texto:
                 tocar = texto.replace('tocar', '')
-                toque = texto.replace('toque', '')
+                #toque = texto.replace('toque', '')
                 fala('Ok, tocando musica....')
                 resultado = pywhatkit.playonyt(tocar)
 
@@ -132,8 +128,8 @@ def ia():
                 joblib.dump(sitespadrao, 'nome.obj')
 
             # informações sobre ativos de mercado
-            elif 'valor hoje' in texto:
-                moeda = texto.replace('valor hoje', '').strip()
+            elif 'moeda hoje' in texto:
+                moeda = texto.replace('moeda hoje', '').strip()
                 get_crypto_price(moeda)
 
             # Apresentação do assistente virtual
