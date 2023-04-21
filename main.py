@@ -3,7 +3,6 @@
 import os
 from tkinter import *
 
-
 def ia():
     # Importando modulos
     import datetime
@@ -19,13 +18,18 @@ def ia():
     import requests
     import joblib
     import soundfile as sf
+    import wavio as wv
+    from pydub import AudioSegment
+    from pydub.playback import play
 
-    global nome, link, meu_site
+
+    global snome, slink, meu_site
 
     # Criação de lista de saudação
     denada = ['De nada', 'Por nada', 'A seu dispor!', 'Até logo!']
     denada = random.choice(denada)
 
+    # Criação de lista para acessar sites predefinidos
     sitespadrao = [['whatsapp', 'https://www.whatsapp.com/?lang=pt_br'],
                    ['youtube', 'https://www.youtube.com/'],
                    ['bolsa de valores', 'https://www.b3.com.br/pt_br/']
@@ -35,17 +39,19 @@ def ia():
     filename = 'minha_voz.wav'
     robo = 'fala_robo.mp3'
 
+    # Variavel global
     global says
 
     # Função de fala
     def fala(text):
-        tts = gTTS(text, lang='pt-BR')
-        tts.save('fala_robo.mp3')
-        tts.save('fala_robo.mp3')
+        tts = gTTS(text, lang='pt')
+        tts.save('robo_mp3')
+        tts.save('robo_fala.mp3')
         playsound(robo)
-        os.remove(filename)
+        playsound(filename)
         os.remove(robo)
-
+        os.remove(filename)
+        
     # Criando Função para gravar o audio
     def grava():
         freq = 48000
@@ -53,7 +59,7 @@ def ia():
         recording = sd.rec(int(duration * freq), samplerate=freq, channels=2)
         print('Fale agora!')
         sd.wait()
-        sf.write('minha_voz.wav', recording, freq, subtype='PCM_16')
+        wv.write('minha_voz.wav', recording, freq, sampwidth=2)
         print('Ok processando...')
 
     # Criando uma função para abir site predefinidos
@@ -63,16 +69,14 @@ def ia():
         listabase = [snome, slink]
         sitespadrao.append(listabase)
 
-    def get_crypto_price(coin):
-        url = f"https://www.google.com/search?q={coin}+hoje"
-        response = requests.get(url)
-        soup = bs4.BeautifulSoup(response.text, 'html.parser')
-        price = soup.find("div", attrs={'class': 'BNeawe iBp4i AP7Wnd'})
-        if price:
-            text = price.find("div", attrs={'class': 'BNeawe iBp4i AP7Wnd'}).text
-            fala(f'O preço de {coin} é de {text}')
-        else:
-            fala(f'Desculpe, não foi possível encontrar informações sobre o valor de {coin}.')
+    # Função para pegar as informações os ativos de mercados
+    def get_crypto_price(moeda):
+        url = "https://www.google.com/search?q=" + moeda + "+hoje"
+        HTML = requests.get(url)
+        soup = bs4.BeautifulSoup(HTML.text, 'html.parser')
+        text = soup.find("div", attrs={'class': 'BNeawe iBp4i AP7Wnd'}).find("div", attrs={
+            'class': 'BNeawe iBp4i AP7Wnd'}).text
+        fala(f'O preço de {moeda} é de {text}')
 
     # Criar um lastro de repetição para o código não parar
     while True:
@@ -103,7 +107,7 @@ def ia():
             # Para realizar uma pesquisa
             elif 'procure por' in texto:
                 procurar = texto.replace('procure por', '')
-                wikipedia.set_lang('pt-BR')
+                wikipedia.set_lang('pt')
                 resultado = wikipedia.summary(procurar, 2)
                 fala(resultado)
 
@@ -112,8 +116,7 @@ def ia():
                 tocar = texto.replace('tocar', '')
                 toque = texto.replace('toque', '')
                 fala('Ok, tocando musica....')
-                resultado = pywhatkit.playonyt(tocar, toque)
-                fala(resultado)
+                resultado = pywhatkit.playonyt(tocar)
 
             # Método para abrir site e adicionar sites
             elif 'abrir site' in texto:
@@ -130,8 +133,8 @@ def ia():
 
             # informações sobre ativos de mercado
             elif 'valor hoje' in texto:
-                btc = texto.replace('valor hoje', '').strip()
-                get_crypto_price(btc)
+                moeda = texto.replace('valor hoje', '').strip()
+                get_crypto_price(moeda)
 
             # Apresentação do assistente virtual
             elif 'apresentar-se' in texto or 'sobre você' in texto or 'apresentar' in texto:
@@ -155,13 +158,16 @@ def ia():
         except:
             print('Ocorreu algum erro, Tente novamente')
 
-
+# Criação um painel interativo para execução do Assistente virtual
 janela = Tk()
-janela.title('Eu sou a Joye')
+janela.title('Eu sou a Joye ')
 
-label2_l = Label(janela, text='Eu sou a Joye sua assistente virtual em processo de,'
-                              'aprendizagem | feito por Dijair Camargo', font='calibri 18')
-label2_l.place(x=0, y=0)
+label_l = Label(janela, text='Zoye - Assistente virtual em Python, em desemvolvimento pela Rocket Software', font='Arial 35')
+label_l.place(x=50, y=100)
 
-label3_l = Label(janela, text='o que posso ajudar', font='calibri 18')
-label3_l.place(x=690, y=480)
+botao_l = Button(janela, height=4, width=40, text='Clique aqui para iniciar!', font='Arial 15', command=ia, background='#FFFAFA')
+botao_l.place(x=220, y=280)
+
+janela.geometry('950x500+0+0')
+
+janela.mainloop()
