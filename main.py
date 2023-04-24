@@ -20,24 +20,20 @@ def ia():
     import joblib
     import wavio as wv
 
-    global snome, slink, meu_site
-
     # Criação de lista de saudação
     saudacao = ['De nada', 'Por nada', 'A seu dispor!', 'Até logo!']
     saudacao = random.choice(saudacao)
 
     # Criação de lista para acessar sites predefinidos
-    sitespadrao = [['whatsapp', 'https://www.whatsapp.com/?lang=pt_br'],
-                   ['youtube', 'https://www.youtube.com/'],
-                   ['bolsa de valores', 'https://www.b3.com.br/pt_br/']
-                   ]
+    meu_sites = [
+                    ['whatsapp', 'https://www.whatsapp.com/?lang=pt_br'],
+                    ['youtube', 'https://www.youtube.com/'],
+                    ['bolsa de valores', 'https://www.b3.com.br/pt_br/']
+                 ]
 
     # Importa arquivos de voz
     filename = 'minha_voz.wav'
     robo = 'fala_robo.mp3'
-
-    # Variavel global
-    global says
 
     # Função de fala
     def fala(text):
@@ -61,18 +57,39 @@ def ia():
     # Criando uma função para abir site predefinidos
     def addsite():
         snome = input('Qual o nome do site?')
-        slink = input('Qual o endereço do site?')
-        listabase = [snome, slink]
-        sitespadrao.append(listabase)
+        slink = input('Qual o link do site?')
+
+        # Verifica se o nome do site já existe na lista
+        for endereco in meu_sites:
+            if endereco[0] == snome:
+                print('O site já existe na lista!')
+                return
+
+        # Se o nome do site não existir na lista, adiciona o novo site
+        lista_site = [snome, slink]
+        meu_sites.append(lista_site)
 
     # Função para pegar as informações os ativos de mercados
-    def get_crypto_price(moeda):
+    def get_crypto_price():
         url = "https://www.google.com/search?q=" + moeda + "+hoje"
         HTML = requests.get(url)
         soup = bs4.BeautifulSoup(HTML.text, 'html.parser')
         text = soup.find("div", attrs={'class': 'BNeawe iBp4i AP7Wnd'}).find("div", attrs={
             'class': 'BNeawe iBp4i AP7Wnd'}).text
         fala(f'O preço de {moeda} é de {text}')
+
+    # Previsão de tempo
+    def get_weather():
+        api_key = "bdec4d7b671ddc7fa6e8fde913124fc2"
+        url = f"https://api.openweathermap.org/data/2.5/weather?q={city}&appid={api_key}&units=metric"
+        response = requests.get(url)
+        data = response.json()
+        if data["cod"] == "404":
+            return None
+        else:
+            description = data["weather"][0]["description"]
+            temp = round(data["main"]["temp"] - 273.15, 2)
+            return f"Em {city}, está {description} com temperatura de {temp} graus Celsius."
 
     # Criar um lastro de repetição para o código não parar
     while True:
@@ -113,35 +130,41 @@ def ia():
                 # toque = texto.replace('toque', '')
                 fala('Ok, tocando musica....')
                 resultado = pywhatkit.playonyt(tocar)
+                fala(resultado)
 
             # Método para abrir site e adicionar sites
+            # VERIFICAR ESSA VARIAVEL SE FUNCIONA INCLUIDO COM SUSGESTÃO DO IA-GPT
             elif 'abrir site' in texto:
                 site = texto.replace('abrir site', '')
-                meu_site = joblib.dump(meu_site, 'meus_sites.obj')
+                meu_sites = joblib.load('meu_sites.obj')
 
-                for i in meu_site:
+                for i in meu_sites:
                     if i[0] in site:
                         webbrowser.open(i[1])
-
-            elif 'adicionar sites' in texto:
+            elif 'adicionar site' in texto:
                 addsite()
-                joblib.dump(sitespadrao, 'nome.obj')
+                joblib.dump(meu_sites, 'meu_sites.obj')
 
             # informações sobre ativos de mercado
+            # VERIFICAR ESSA VARIAVEL SE FUNCIONA INCLUIDO COM SUSGESTÃO DO IA-GPT
             elif 'moeda hoje' in texto:
                 moeda = texto.replace('moeda hoje', '').strip()
-                get_crypto_price(moeda)
+                resultado = ('moeda', get_crypto_price())
+                fala(resultado)
+
+            # Informa a previsão do tempo
+            # VERIFICAR ESSA VARIAVEL SE FUNCIONA INCLUIDO COM SUSGESTÃO DO IA-GPT
+            elif 'previsão do tempo' in texto or 'clima' in texto:
+                city = texto.split()[-1]
+                resultado = ('previsão do tempo', get_weather())
+                fala(resultado)
 
             # Apresentação do assistente virtual
             elif 'apresentar-se' in texto or 'sobre você' in texto or 'apresentar' in texto:
-                fala(
-                    'Olá, eu sou ChatGPT, um assistente virtual desenvolvido pela OpenAI.,'
-                    ' Estou aqui para ajudá-lo a encontrar,'
-                    ' respostas para suas perguntas e auxiliá-lo em tarefas simples ou complexas.,'
-                    ' Estou equipado com tecnologia de linguagem natural avançada ,'
-                    'para fornecer respostas precisas e relevantes,'
-                    ' para suas consultas. Sinta-se à vontade para me perguntar ,'
-                    'qualquer coisa - estou sempre pronto para ajudá-lo!')
+                fala('Olá, eu sou a Zoye uma assistente virtual. '
+                     'Estou aqui para ajudár em suas tarefas diárias e responder suas perguntas.'
+                     'O que posso fazer por você hoje'
+                     )
 
             # Criação de algumas respostas simples
             elif 'bom dia' in texto:
