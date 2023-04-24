@@ -3,6 +3,7 @@
 import os
 from tkinter import *
 
+
 def ia():
     # Importando modulos
     import datetime
@@ -17,14 +18,13 @@ def ia():
     import pywhatkit
     import requests
     import joblib
-    import soundfile as sf
     import wavio as wv
 
     global snome, slink, meu_site
 
     # Criação de lista de saudação
-    denada = ['De nada', 'Por nada', 'A seu dispor!', 'Até logo!']
-    denada = random.choice(denada)
+    saudacao = ['De nada', 'Por nada', 'A seu dispor!', 'Até logo!']
+    saudacao = random.choice(saudacao)
 
     # Criação de lista para acessar sites predefinidos
     sitespadrao = [['whatsapp', 'https://www.whatsapp.com/?lang=pt_br'],
@@ -47,7 +47,7 @@ def ia():
         playsound(robo)
         os.remove(filename)
         os.remove(robo)
-        
+
     # Criando Função para gravar o audio
     def grava():
         freq = 48000
@@ -110,7 +110,7 @@ def ia():
             # Para tocar a musica ou video no youtube
             elif 'toque' in texto or 'tocar' in texto:
                 tocar = texto.replace('tocar', '')
-                #toque = texto.replace('toque', '')
+                # toque = texto.replace('toque', '')
                 fala('Ok, tocando musica....')
                 resultado = pywhatkit.playonyt(tocar)
 
@@ -151,17 +151,19 @@ def ia():
             elif 'boa noite' in texto:
                 fala('boa noite!')
 
-        except:
+        except EXCEPTION:
             print('Ocorreu algum erro, Tente novamente')
+
 
 # Criação um painel interativo para execução do Assistente virtual
 janela = Tk()
 janela.title('Eu sou a Joye ')
 
-label_l = Label(janela, text='Zoye - Assistente virtual em Python, em desemvolvimento pela Rocket Software', font='Arial 35')
+label_l = Label(janela, text='Zoye - Assistente virtual', font='Arial 35')
 label_l.place(x=50, y=100)
 
-botao_l = Button(janela, height=4, width=40, text='Clique aqui para iniciar!', font='Arial 15', command=ia, background='#FFFAFA')
+botao_l = Button(janela, height=4, width=40, text='Clique aqui para iniciar!', font='Arial 15', command=ia,
+                 background='#FFFAFA')
 botao_l.place(x=220, y=280)
 
 janela.geometry('950x500+0+0')
