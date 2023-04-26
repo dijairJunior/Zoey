@@ -110,8 +110,8 @@ def ia():
             # Para tocar a musica ou video no youtube
             elif 'toque' in texto or 'tocar' in texto:
                 tocar = texto.replace('tocar', '')
-                #toque = texto.replace('toque', '')
-                fala('Ok, tocando musica....')
+                # toque = texto.replace('toque', '')
+                fala('Ok, tocando música....')
                 resultado = pywhatkit.playonyt(tocar)
 
             # Método para abrir site e adicionar sites
