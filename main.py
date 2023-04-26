@@ -19,6 +19,7 @@ def ia():
     import requests
     import joblib
     import wavio as wv
+    # from googlesearch import search
 
     # Criação de lista de saudação
     saudacao = ['De nada', 'Por nada', 'A seu dispor!', 'Até logo!']
@@ -26,10 +27,10 @@ def ia():
 
     # Criação de lista para acessar sites predefinidos
     meu_sites = [
-                    ['whatsapp', 'https://www.whatsapp.com/?lang=pt_br'],
-                    ['youtube', 'https://www.youtube.com/'],
-                    ['bolsa de valores', 'https://www.b3.com.br/pt_br/']
-                 ]
+        ['whatsapp', 'https://www.whatsapp.com/?lang=pt_br'],
+        ['youtube', 'https://www.youtube.com/'],
+        ['bolsa de valores', 'https://www.b3.com.br/pt_br/']
+    ]
 
     # Importa arquivos de voz
     filename = 'minha_voz.wav'
@@ -69,19 +70,36 @@ def ia():
         lista_site = [snome, slink]
         meu_sites.append(lista_site)
 
+    def abrir_site(site):
+        # Carrega a lista de sites predefinidos
+        meu_sites = joblib.load('meu_sites.obj')
+
+        # Procura na lista pelo site desejado
+        for i in meu_sites:
+            if i[0] == site:
+                # Abre o site no navegador padrão
+                webbrowser.open(i[1])
+                return f'Abrindo {site}...'
+
+        # Se não encontrar o site, retorna uma mensagem de erro
+        return f'O site {site} não foi encontrado.'
+
     # Função para pegar as informações os ativos de mercados
-    def get_crypto_price():
+    def get_crypto_price(moeda=None):
         url = "https://www.google.com/search?q=" + moeda + "+hoje"
         HTML = requests.get(url)
+        moeda = 'Bitcoin'
         soup = bs4.BeautifulSoup(HTML.text, 'html.parser')
         text = soup.find("div", attrs={'class': 'BNeawe iBp4i AP7Wnd'}).find("div", attrs={
             'class': 'BNeawe iBp4i AP7Wnd'}).text
         fala(f'O preço de {moeda} é de {text}')
 
     # Previsão de tempo
-    def get_weather():
+    def get_weather(city=None):
         api_key = "bdec4d7b671ddc7fa6e8fde913124fc2"
-        url = f"https://api.openweathermap.org/data/2.5/weather?q={city}&appid={api_key}&units=metric"
+        url = f"https://api.openweathermap.org/data/2.5/weather?q=" \
+              f"{city}&appid={api_key}&units=metric"
+        city = "São Paulo"
         response = requests.get(url)
         data = response.json()
         if data["cod"] == "404":
@@ -121,49 +139,54 @@ def ia():
             elif 'procure por' in texto:
                 procurar = texto.replace('procure por', '')
                 wikipedia.set_lang('pt')
-                resultado = wikipedia.summary(procurar, 2)
+                resultado = wikipedia.summary(procurar, 1)
                 fala(resultado)
 
             # Para tocar a musica ou video no youtube
             elif 'toque' in texto or 'tocar' in texto:
                 tocar = texto.replace('tocar', '')
-                # toque = texto.replace('toque', '')
-                fala('Ok, tocando musica....')
                 resultado = pywhatkit.playonyt(tocar)
-                fala(resultado)
+                fala('Ok, tocando música....')
 
             # Método para abrir site e adicionar sites
-            # VERIFICAR ESSA VARIAVEL SE FUNCIONA INCLUIDO COM SUSGESTÃO DO IA-GPT
             elif 'abrir site' in texto:
-                site = texto.replace('abrir site', '')
-                meu_sites = joblib.load('meu_sites.obj')
+                site = texto.replace('abrir site ', '')
+                resultado = abrir_site(site)
+                fala(resultado)
 
                 for i in meu_sites:
                     if i[0] in site:
                         webbrowser.open(i[1])
             elif 'adicionar site' in texto:
                 addsite()
-                joblib.dump(meu_sites, 'meu_sites.obj')
+                joblib.dump(meu_sites, 'meusites.obj')
 
             # informações sobre ativos de mercado
-            # VERIFICAR ESSA VARIAVEL SE FUNCIONA INCLUIDO COM SUSGESTÃO DO IA-GPT
             elif 'moeda hoje' in texto:
                 moeda = texto.replace('moeda hoje', '').strip()
-                resultado = ('moeda', get_crypto_price())
+                if moeda:
+                    resultado = ('moeda', get_crypto_price(moeda))
+                else:
+                    moeda = "Bitcoin"
+                    resultado = ('moeda', get_crypto_price(moeda))
                 fala(resultado)
 
             # Informa a previsão do tempo
-            # VERIFICAR ESSA VARIAVEL SE FUNCIONA INCLUIDO COM SUSGESTÃO DO IA-GPT
             elif 'previsão do tempo' in texto or 'clima' in texto:
                 city = texto.split()[-1]
-                resultado = ('previsão do tempo', get_weather())
+                if city:
+                    resultado = ('previsão do tempo', get_weather(city))
+                else:
+                    city = "São Paulo"  # valor padrão
+                    resultado = ('previsão do tempo', get_weather(city))
                 fala(resultado)
 
             # Apresentação do assistente virtual
-            elif 'apresentar-se' in texto or 'sobre você' in texto or 'apresentar' in texto:
-                fala('Olá, eu sou a Zoye uma assistente virtual. '
-                     'Estou aqui para ajudár em suas tarefas diárias e responder suas perguntas.'
-                     'O que posso fazer por você hoje'
+            elif 'Zoye apresente-se' in texto or 'sobre você' in texto or 'apresentar' in texto:
+                fala('Olá sou a Zoye uma assistente virtual em construção, fui criada pelo meu criador Dijair.'
+                     'Estou aqui para tentar lhe ajudar em suas tarefas diárias e responder suas perguntas,'
+                     'minhas respostas são limitadas porque ainda estou aprendendo,'
+                     'meu código fonte não ainda está completo tenha paciência'
                      )
 
             # Criação de algumas respostas simples
@@ -174,7 +197,7 @@ def ia():
             elif 'boa noite' in texto:
                 fala('boa noite!')
 
-        except EXCEPTION:
+        except:
             print('Ocorreu algum erro, Tente novamente')
 
 

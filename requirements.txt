@@ -1,6 +1,5 @@
 gtts==2.2.4
 joblib==1.1.1
-pillow==8.4.0
 pip-chill==1.0.1
 playsound==1.2.2
 pyaudio==0.2.11
@@ -17,3 +16,4 @@ pywhatkit==5.4
 bs4==0.0.1
 requests==2.27.1
 soundfile==0.12.1
+GoogleSearch-Api-2020==0.0.6
