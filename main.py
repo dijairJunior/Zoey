@@ -136,17 +136,18 @@ def ia():
                 fala('Agora são' + hora)
 
             # Para realizar uma pesquisa
-            elif 'procure por' in texto:
-                procurar = texto.replace('procure por', '')
+            elif 'pesquise' in texto:
+                pesquise = texto.replace('pesquise', '')
                 wikipedia.set_lang('pt')
-                resultado = wikipedia.summary(procurar, 1)
+                resultado = wikipedia.summary(pesquise, 1)
                 fala(resultado)
 
             # Para tocar a musica ou video no youtube
-            elif 'toque' in texto or 'tocar' in texto:
-                tocar = texto.replace('tocar', '')
-                resultado = pywhatkit.playonyt(tocar)
-                fala('Ok, tocando música....')
+            elif 'reproduzir' in texto or 'escutar' in texto:
+                tocar = texto.replace('reproduzir', '')
+                toque = texto.replace('escutar', '')
+                fala('Ok, iniciando musica')
+                resultado = pywhatkit.playonyt(toque)
 
             # Método para abrir site e adicionar sites
             elif 'abrir site' in texto:
@@ -181,21 +182,28 @@ def ia():
                     resultado = ('previsão do tempo', get_weather(city))
                 fala(resultado)
 
+            # Procura qualquer coisa na pesquisa do Google e retorna a fala
+            elif 'procura' in texto:
+                procurar = texto.replace('procura', '')
+                pywhatkit.search(procurar)
+                resultado = pywhatkit.info(procurar, lines=1)
+                fala(resultado)
+
             # Apresentação do assistente virtual
-            elif 'Zoye apresente-se' in texto or 'sobre você' in texto or 'apresentar' in texto:
-                fala('Olá sou a Zoye uma assistente virtual em construção, fui criada pelo meu criador Dijair.'
+            elif 'apresente-se' in texto or 'sobre você' in texto or 'apresentar' in texto:
+                fala('Olá sou a Zoe uma assistente virtual em construção, fui criada pelo meu criador Dijair.'
                      'Estou aqui para tentar lhe ajudar em suas tarefas diárias e responder suas perguntas,'
                      'minhas respostas são limitadas porque ainda estou aprendendo,'
-                     'meu código fonte não ainda está completo tenha paciência'
+                     'Estou em desenvolvimento, por favor, tenha paciência.'
                      )
 
             # Criação de algumas respostas simples
             elif 'bom dia' in texto:
-                fala('bom dia!')
+                fala('bom dia! dijair')
             elif 'boa tarde' in texto:
-                fala('boa tarde!')
+                fala('boa tarde! dijair')
             elif 'boa noite' in texto:
-                fala('boa noite!')
+                fala('boa noite! dijair')
 
         except:
             print('Ocorreu algum erro, Tente novamente')
