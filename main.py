@@ -211,9 +211,9 @@ def ia():
 
 # Criação um painel interativo para execução do Assistente virtual
 janela = Tk()
-janela.title('Eu sou a Joye ')
+janela.title('Eu sou a Joe ')
 
-label_l = Label(janela, text='Zoye - Assistente virtual', font='Arial 35')
+label_l = Label(janela, text='Zoe - Assistente virtual', font='Arial 35')
 label_l.place(x=50, y=100)
 
 botao_l = Button(janela, height=4, width=40, text='Clique aqui para iniciar!', font='Arial 15', command=ia,
